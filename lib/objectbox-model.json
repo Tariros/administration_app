@@ -1,0 +1,185 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:493421300811468680",
+      "lastPropertyId": "2:5756144890093728380",
+      "name": "Categories",
+      "properties": [
+        {
+          "id": "1:906556679052362007",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5756144890093728380",
+          "name": "name",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:2609326345101509421",
+      "lastPropertyId": "5:1855930378351106938",
+      "name": "Conditions",
+      "properties": [
+        {
+          "id": "1:7087844791503537232",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6051325736118493358",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:5438845775846145712",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "4:2225146082137468797",
+          "name": "causes",
+          "type": 30
+        },
+        {
+          "id": "5:1855930378351106938",
+          "name": "complications",
+          "type": 30
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:5554225170891217308",
+      "lastPropertyId": "8:2611441828463906729",
+      "name": "Items",
+      "properties": [
+        {
+          "id": "1:2158821375980545017",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1380189735936351701",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:5368467357347244208",
+          "name": "alsoCalled",
+          "type": 9
+        },
+        {
+          "id": "4:8178533023042784426",
+          "name": "uses",
+          "type": 9
+        },
+        {
+          "id": "5:3788868600177946414",
+          "name": "caution",
+          "type": 9
+        },
+        {
+          "id": "6:5992163432633560901",
+          "name": "conscientiousConsumerInformation",
+          "type": 9
+        },
+        {
+          "id": "7:7509759448016889319",
+          "name": "references",
+          "type": 9
+        },
+        {
+          "id": "8:2611441828463906729",
+          "name": "categoryId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "1:8109605575080774012",
+          "relationTarget": "Categories"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:9004308457685907219",
+      "lastPropertyId": "9:1459274752756187479",
+      "name": "Plans",
+      "properties": [
+        {
+          "id": "1:7549931486868707536",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7920672040294168918",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:7796427928556574458",
+          "name": "instructions",
+          "type": 9
+        },
+        {
+          "id": "4:1180968618370236731",
+          "name": "dosage",
+          "type": 9
+        },
+        {
+          "id": "5:2934476228735900018",
+          "name": "precautions",
+          "type": 9
+        },
+        {
+          "id": "6:12877913749435373",
+          "name": "references",
+          "type": 9
+        },
+        {
+          "id": "7:2360568390853401989",
+          "name": "ItemId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "2:2186272959642087659",
+          "relationTarget": "Items"
+        },
+        {
+          "id": "9:1459274752756187479",
+          "name": "ConditionId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "4:2228119654029802589",
+          "relationTarget": "Conditions"
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "4:9004308457685907219",
+  "lastIndexId": "4:2228119654029802589",
+  "lastRelationId": "2:5272826434264779726",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [
+    7865724053688596371
+  ],
+  "retiredPropertyUids": [
+    4615812197920491081
+  ],
+  "retiredRelationUids": [
+    2223625136742044792,
+    5272826434264779726
+  ],
+  "version": 1
+}
