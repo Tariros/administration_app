@@ -106,7 +106,13 @@
           "relationTarget": "Categories"
         }
       ],
-      "relations": []
+      "relations": [
+        {
+          "id": "3:3745156068365739813",
+          "name": "interaction",
+          "targetId": "5:5947841671898309004"
+        }
+      ]
     },
     {
       "id": "4:9004308457685907219",
@@ -162,11 +168,30 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "5:5947841671898309004",
+      "lastPropertyId": "2:7073330112723268233",
+      "name": "Interactions",
+      "properties": [
+        {
+          "id": "1:8254771463267817360",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7073330112723268233",
+          "name": "description",
+          "type": 9
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "4:9004308457685907219",
+  "lastEntityId": "5:5947841671898309004",
   "lastIndexId": "4:2228119654029802589",
-  "lastRelationId": "2:5272826434264779726",
+  "lastRelationId": "3:3745156068365739813",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,

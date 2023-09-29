@@ -1,7 +1,5 @@
 import 'package:administration_application/homepage.dart';
 import 'package:flutter/material.dart';
-import 'package:administration_application/homescreen.dart';
-import 'package:administration_application/objectbox.g.dart';
 import 'package:administration_application/objectbox.store.dart';
 import 'package:administration_application/screens/Health Issues/condition.page.dart';
 import 'package:administration_application/screens/Remedies/item.page.dart';
@@ -28,7 +26,7 @@ class MyApp extends StatelessWidget {
       home: HomePage(),
       routes: {
         '/CategoryScreen': (context) => CategoriesPage(selectedCategories: [],),
-        '/ItemScreen':(context)=> ItemsPage(),
+        '/ItemScreen':(context)=> ItemPage(),
         '/ConditionScreen': (context)=> ConditionsPage(selectedConditions: [],),
         '/PlanScreen':(context)=> PlansPage(),
         //'/DeleteConditionScreen': (context)=> DeleteConditionPage(selectedConditions: selectedConditions),
@@ -36,3 +34,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

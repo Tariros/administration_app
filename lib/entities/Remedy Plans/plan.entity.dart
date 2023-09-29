@@ -29,6 +29,8 @@ class Plans {
   final Item = ToOne<Items>();
   final Condition = ToOne<Conditions>();
 
+
+
   Plans({
     required this.id,
     required this.name,

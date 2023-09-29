@@ -1,7 +1,7 @@
 import 'package:objectbox/objectbox.dart';
 import 'package:administration_application/entities/Remedies/category.entity.dart';
 import 'package:administration_application/entities/Remedy Plans/plan.entity.dart';
-
+import 'package:administration_application/entities/Remedies/interaction.entity.dart';
 
 @Entity()
 class Items {
@@ -33,7 +33,7 @@ class Items {
   final plan = ToMany<Plans>();
 
   final category = ToOne<Categories>();
-
+  final interaction = ToMany<Interactions>();
 
   Items({
     required this.id,

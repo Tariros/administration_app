@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:administration_application/objectbox.store.dart';
 import 'package:administration_application/objectbox.g.dart';
 import 'package:administration_application/entities/Remedies/category.entity.dart';
 import 'package:administration_application/entities/Remedies/item.entity.dart';
+import 'package:administration_application/entities/Remedies/interaction.entity.dart';
 
 class ItemPage extends StatefulWidget {
   @override
@@ -58,8 +60,6 @@ class _ItemPageState extends State<ItemPage> {
     _loadItems();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,7 +101,7 @@ class _ItemPageState extends State<ItemPage> {
               });
             },
             decoration: InputDecoration(
-              labelText: 'Filter by Category',
+              labelText: ' Category',
             ),
           ),
           Expanded(
@@ -129,12 +129,13 @@ class _ItemPageState extends State<ItemPage> {
                       ),
                     IconButton(
                     icon: Icon(Icons.visibility),
-                   onPressed: () {Navigator.push(
-                     context,
-                     MaterialPageRoute(
-                       builder: (context) => ViewItemPage(item: item),
-                     ),
-                   );
+                   onPressed: () {
+                      //Navigator.push(
+                     //context,
+                    // MaterialPageRoute(
+                     //  builder: (context) => ViewItemPage(item: item),
+                    // ),
+                 //  );
 
                 },
                 ),
@@ -185,6 +186,9 @@ class _AddItemPageState extends State<AddItemPage> {
   late TextEditingController _referencesController;
   Categories? _selectedCategory;
   List<Categories> _categories = [];
+  List<InteractionEntry> _interactions = []; // List to store interactions
+  List<Items> _items = []; // Define _items list
+
 
   @override
   void initState() {
@@ -195,6 +199,7 @@ class _AddItemPageState extends State<AddItemPage> {
     _cautionController = TextEditingController(text: '');
     _consumerInformationController = TextEditingController(text: '');
     _referencesController = TextEditingController(text: '');
+    _loadItems();
     _loadCategories();
   }
 
@@ -214,6 +219,13 @@ class _AddItemPageState extends State<AddItemPage> {
     _categories = categoryBox.getAll();
     setState(() {});
   }
+
+  Future<void> _loadItems() async {
+    final itemBox = ObjectBoxService.objectBoxStore.box<Items>();
+    _items = itemBox.getAll();
+    setState(() {});
+  }
+
 
   void _showConfirmationDialog() {
     showDialog(
@@ -252,7 +264,7 @@ class _AddItemPageState extends State<AddItemPage> {
 
     if (itemName.isNotEmpty) {
       final newItem = Items(
-        id: 0, // You can set a unique ID, or ObjectBox will auto-generate one.
+        id: 0,
         name: itemName,
         alsoCalled: itemAlsoCalled,
         uses: itemUses,
@@ -267,109 +279,156 @@ class _AddItemPageState extends State<AddItemPage> {
 
       final itemBox = ObjectBoxService.objectBoxStore.box<Items>();
       itemBox.put(newItem);
-      widget.onAdditionComplete();
 
-      // Optionally, you can navigate back to the items list or another screen
+      // Add interactions to the new item
+      for (final entry in _interactions) {
+        if (entry.selectedItem != null &&
+            entry.descriptionController.text.isNotEmpty) {
+          final interaction = Interactions(
+            id: 0,
+            // You can set a unique ID or ObjectBox will auto-generate one
+            description: entry.descriptionController.text,
+          );
+          interaction.items.add(
+              newItem); // Link the interaction to the new item
+          interaction.items.add(
+              entry.selectedItem!); // Link the interaction to the selected item
+          final interactionBox = ObjectBoxService.objectBoxStore.box<
+              Interactions>();
+          interactionBox.put(interaction);
+        }
+      }
+
+      widget.onAdditionComplete();
       Navigator.pop(context);
     }
   }
 
+  List<Widget> _interactionWidgets = []; // List to store interaction widgets
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Add Item')),
-        body: SingleChildScrollView(
-          child:
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(labelText: 'Name'),
-                ),
-                TextField(
-                  controller: _alsoCalledController,
-                  decoration: InputDecoration(labelText: 'Also Called'),
-                ),
-                TextField(
-                  controller: _usesController,
-                  decoration: InputDecoration(labelText: 'Uses'),
-                ),
-                TextField(
-                  controller: _cautionController,
-                  decoration: InputDecoration(labelText: 'Caution'),
-                ),
-                TextField(
-                  controller: _consumerInformationController,
-                  decoration: InputDecoration(labelText: 'Conscientious Consumer Information'),
-                ),
-                TextField(
-                  controller: _referencesController,
-                  decoration: InputDecoration(labelText: 'References'),
-                ),
-                DropdownButtonFormField<Categories>(
-                  value: _selectedCategory,
-                  items: _categories.map((category) {
-                    return DropdownMenuItem<Categories>(
-                      value: category,
-                      child: Text(category.name),
-                    );
-                  }).toList(),
-                  onChanged: (selectedCategory) {
-                    setState(() {
-                      _selectedCategory = selectedCategory;
-                    });
-                  },
-                  decoration: InputDecoration(labelText: 'Select Category'),
-                ),
-                ElevatedButton(
-                  onPressed: _showConfirmationDialog,
-                  child: Text('Add Item'),
-                ),
-              ],
-            ),
+      appBar: AppBar(title: Text('Add Item')),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ... (other text fields and dropdowns)
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Name'),
+              ),
+              TextField(
+                controller: _alsoCalledController,
+                decoration: InputDecoration(labelText: 'Also Called'),
+              ),
+              TextField(
+                controller: _usesController,
+                decoration: InputDecoration(labelText: 'Uses'),
+              ),
+              TextField(
+                controller: _cautionController,
+                decoration: InputDecoration(labelText: 'Caution'),
+              ),
+              ElevatedButton(
+                onPressed: _addInteraction,
+                child: Text('Add Interaction'),
+              ),
+              Column(
+                children: _interactionWidgets,
+              ),
+
+              TextField(
+                controller: _consumerInformationController,
+                decoration: InputDecoration(
+                    labelText: 'Conscientious Consumer Information'),
+              ),
+              TextField(
+                controller: _referencesController,
+                decoration: InputDecoration(labelText: 'References'),
+              ),
+              DropdownButtonFormField<Categories>(
+                value: _selectedCategory,
+                items: _categories.map((category) {
+                  return DropdownMenuItem<Categories>(
+                    value: category,
+                    child: Text(category.name),
+                  );
+                }).toList(),
+                onChanged: (selectedCategory) {
+                  setState(() {
+                    _selectedCategory = selectedCategory;
+                  });
+                },
+                decoration: InputDecoration(labelText: 'Select Category'),
+              ),
+
+              ElevatedButton(
+                onPressed: _showConfirmationDialog,
+                child: Text('Add Item'),
+              ),
+              SizedBox(height: 16),
+            ],
           ),
-        )
-    );
-  }
-}
-///VIEW ITEM
-
-class ViewItemPage extends StatelessWidget {
-
-  final Items item;
-
-  ViewItemPage({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Item Information')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Name: ${item.name}',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Description: ${item.alsoCalled}'),
-            SizedBox(height: 8),
-            Text('Uses: ${item.uses}'),
-            SizedBox(height: 8),
-            Text('Caution: ${item.caution}'),
-            SizedBox(height: 16),
-            Text('Conscientious Consumer Information: ${item.conscientiousConsumerInformation}'),
-            SizedBox(height: 16),
-            Text('References: ${item.references}'),
-            SizedBox(height: 16),
-          ],
         ),
       ),
     );
   }
+
+// ... (other methods)
+
+// Function to add an interaction entry
+  void _addInteraction() {
+    final entry = InteractionEntry(
+      selectedItem: null,
+      descriptionController: TextEditingController(text: ''),
+    );
+
+    setState(() {
+      _interactionWidgets.add(
+        Row(
+          children: [
+            // Dropdown to select an existing item for interaction
+            DropdownButton<Items>(
+              value: entry.selectedItem,
+              onChanged: (item) {
+                setState(() {
+                  entry.selectedItem = item;
+                });
+              },
+              items: _items.map((item) {
+                return DropdownMenuItem<Items>(
+                  value: item,
+                  child: Text(item.name),
+                );
+              }).toList(),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: TextField(
+                controller: entry.descriptionController,
+                decoration: InputDecoration(
+                  labelText: 'Interaction Description',
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+}
+class InteractionEntry {
+  Items? selectedItem;
+  TextEditingController descriptionController;
+
+  InteractionEntry({
+    this.selectedItem,
+    required this.descriptionController,
+  });
+
 }

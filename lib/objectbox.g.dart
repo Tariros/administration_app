@@ -16,6 +16,7 @@ import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
 import 'entities/Health Issues/condition.entity.dart';
 import 'entities/Remedies/category.entity.dart';
+import 'entities/Remedies/interaction.entity.dart';
 import 'entities/Remedies/item.entity.dart';
 import 'entities/Remedy Plans/plan.entity.dart';
 
@@ -128,7 +129,12 @@ final _entities = <ModelEntity>[
             indexId: const IdUid(1, 8109605575080774012),
             relationTarget: 'Categories')
       ],
-      relations: <ModelRelation>[],
+      relations: <ModelRelation>[
+        ModelRelation(
+            id: const IdUid(3, 3745156068365739813),
+            name: 'interaction',
+            targetId: const IdUid(5, 5947841671898309004))
+      ],
       backlinks: <ModelBacklink>[
         ModelBacklink(name: 'plan', srcEntity: 'Plans', srcField: 'item')
       ]),
@@ -184,7 +190,29 @@ final _entities = <ModelEntity>[
             relationTarget: 'Conditions')
       ],
       relations: <ModelRelation>[],
-      backlinks: <ModelBacklink>[])
+      backlinks: <ModelBacklink>[]),
+  ModelEntity(
+      id: const IdUid(5, 5947841671898309004),
+      name: 'Interactions',
+      lastPropertyId: const IdUid(2, 7073330112723268233),
+      flags: 0,
+      properties: <ModelProperty>[
+        ModelProperty(
+            id: const IdUid(1, 8254771463267817360),
+            name: 'id',
+            type: 6,
+            flags: 1),
+        ModelProperty(
+            id: const IdUid(2, 7073330112723268233),
+            name: 'description',
+            type: 9,
+            flags: 0)
+      ],
+      relations: <ModelRelation>[],
+      backlinks: <ModelBacklink>[
+        ModelBacklink(
+            name: 'items', srcEntity: 'Items', srcField: 'interaction')
+      ])
 ];
 
 /// Shortcut for [Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -214,9 +242,9 @@ Future<Store> openStore(
 ModelDefinition getObjectBoxModel() {
   final model = ModelInfo(
       entities: _entities,
-      lastEntityId: const IdUid(4, 9004308457685907219),
+      lastEntityId: const IdUid(5, 5947841671898309004),
       lastIndexId: const IdUid(4, 2228119654029802589),
-      lastRelationId: const IdUid(2, 5272826434264779726),
+      lastRelationId: const IdUid(3, 3745156068365739813),
       lastSequenceId: const IdUid(0, 0),
       retiredEntityUids: const [],
       retiredIndexUids: const [7865724053688596371],
@@ -326,6 +354,7 @@ ModelDefinition getObjectBoxModel() {
         model: _entities[2],
         toOneRelations: (Items object) => [object.category],
         toManyRelations: (Items object) => {
+              RelInfo<Items>.toMany(3, object.id): object.interaction,
               RelInfo<Plans>.toOneBacklink(
                       7, object.id, (Plans srcObject) => srcObject.Item):
                   object.plan
@@ -384,6 +413,8 @@ ModelDefinition getObjectBoxModel() {
           object.category.targetId =
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 18, 0);
           object.category.attach(store);
+          InternalToManyAccess.setRelInfo<Items>(
+              object.interaction, store, RelInfo<Items>.toMany(3, object.id));
           InternalToManyAccess.setRelInfo<Items>(
               object.plan,
               store,
@@ -447,6 +478,37 @@ ModelDefinition getObjectBoxModel() {
           object.Condition.targetId =
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 20, 0);
           object.Condition.attach(store);
+          return object;
+        }),
+    Interactions: EntityDefinition<Interactions>(
+        model: _entities[4],
+        toOneRelations: (Interactions object) => [],
+        toManyRelations: (Interactions object) =>
+            {RelInfo<Items>.toManyBacklink(3, object.id): object.items},
+        getId: (Interactions object) => object.id,
+        setId: (Interactions object, int id) {
+          object.id = id;
+        },
+        objectToFB: (Interactions object, fb.Builder fbb) {
+          final descriptionOffset = fbb.writeString(object.description);
+          fbb.startTable(3);
+          fbb.addInt64(0, object.id);
+          fbb.addOffset(1, descriptionOffset);
+          fbb.finish(fbb.endTable());
+          return object.id;
+        },
+        objectFromFB: (Store store, ByteData fbData) {
+          final buffer = fb.BufferContext(fbData);
+          final rootOffset = buffer.derefObject(0);
+          final idParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+          final descriptionParam =
+              const fb.StringReader(asciiOptimization: true)
+                  .vTableGet(buffer, rootOffset, 6, '');
+          final object =
+              Interactions(id: idParam, description: descriptionParam);
+          InternalToManyAccess.setRelInfo<Interactions>(
+              object.items, store, RelInfo<Items>.toManyBacklink(3, object.id));
           return object;
         })
   };
@@ -517,6 +579,10 @@ class Items_ {
   /// see [Items.category]
   static final category =
       QueryRelationToOne<Items, Categories>(_entities[2].properties[7]);
+
+  /// see [Items.interaction]
+  static final interaction =
+      QueryRelationToMany<Items, Interactions>(_entities[2].relations[0]);
 }
 
 /// [Plans] entity fields to define ObjectBox queries.
@@ -549,4 +615,15 @@ class Plans_ {
   /// see [Plans.Condition]
   static final Condition =
       QueryRelationToOne<Plans, Conditions>(_entities[3].properties[7]);
+}
+
+/// [Interactions] entity fields to define ObjectBox queries.
+class Interactions_ {
+  /// see [Interactions.id]
+  static final id =
+      QueryIntegerProperty<Interactions>(_entities[4].properties[0]);
+
+  /// see [Interactions.description]
+  static final description =
+      QueryStringProperty<Interactions>(_entities[4].properties[1]);
 }

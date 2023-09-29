@@ -4,8 +4,6 @@ import 'package:administration_application/entities/Remedies/item.entity.dart';
 import 'package:administration_application/entities/Remedy Plans/plan.entity.dart';
 import 'package:administration_application/objectbox.g.dart';
 import 'package:objectbox/objectbox.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'package:administration_application/objectbox.store.dart';
 import 'package:administration_application/entities/Health Issues/condition.entity.dart';
 
@@ -20,7 +18,6 @@ class _ItemListState extends State<ItemList> {
   List<Items> _items = [];
   List<Categories> _categories = [];
   Categories? _selectedCategory;
-  // Getter to retrieve associated conditions
 
 
   @override
@@ -29,6 +26,7 @@ class _ItemListState extends State<ItemList> {
     _itemBox = ObjectBoxService.objectBoxStore.box<Items>();
     _categoryBox = ObjectBoxService.objectBoxStore.box<Categories>();
     _loadData();
+    _loadCategories();
   }
 
   Future<void> _loadData() async {
@@ -46,6 +44,13 @@ class _ItemListState extends State<ItemList> {
 
   }
 
+  Future<void> _loadCategories() async {
+    _categories = _categoryBox.getAll();
+    setState(() {});
+  }
+
+
+
   void _viewItem(Items item) {
     // Navigate to the ItemScreen with the selected item's data
     Navigator.push(
@@ -61,57 +66,71 @@ class _ItemListState extends State<ItemList> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Items Listing'),
-        actions: [
-          PopupMenuButton<Categories>(
-            onSelected: (selectedCategory) {
-              setState(() {
-                _selectedCategory = selectedCategory;
-                _loadData();
-              });
-            },
-            itemBuilder: (BuildContext context) {
-              return _categories.map<PopupMenuEntry<Categories>>((Categories category) {
-                return PopupMenuItem<Categories>(
-                  value: category,
-                  child: Text(category.name),
-                );
-              }).toList();
-            },
-          ),
-        ],
+          actions: [
+            PopupMenuButton<Categories>(
+              onSelected: (selectedCategory) {
+                setState(() {
+                  _selectedCategory = selectedCategory;
+                  _loadData();
+                });
+              },
+              itemBuilder: (BuildContext context) {
+                return _categories.map<PopupMenuEntry<Categories>>((Categories category) {
+                  return PopupMenuItem<Categories>(
+                    value: category,
+                    child: Text(category.name),
+                  );
+                }).toList();
+              },
+            ),
+          ]
       ),
       body: Column(
         children: [
-          DropdownButtonFormField<Categories>(
-            value: _selectedCategory,
-            items: _categories.map((category) {
-              return DropdownMenuItem<Categories>(
-                value: category,
-                child: Text(category.name),
-              );
-            }).toList(),
-            onChanged: (selectedCategory) {
-              setState(() {
-                _selectedCategory = selectedCategory;
-                _loadData();
-              });
-            },
-            decoration: InputDecoration(
-              labelText: 'Filter by Category',
-            ),
-          ),
+      DropdownButtonFormField<Categories>(
+      value: _selectedCategory,
+        items: _categories.map((category) {
+          return DropdownMenuItem<Categories>(
+            value: category,
+            child: Text(category.name),
+          );
+        }).toList(),
+        onChanged: (selectedCategory) {
+          setState(() {
+            _selectedCategory = selectedCategory;
+            _loadData();
+          });
+        },
+        decoration: InputDecoration(
+          labelText: 'Filter by Category',
+        ),
+      ),
           Expanded(
             child: ListView.builder(
               itemCount: _items.length,
               itemBuilder: (BuildContext context, int index) {
                 final item = _items[index];
-                return ListTile(
-                  title: Text(item.name),
-                  subtitle: Text(item.category.target?.name ?? 'No Category'),
+                return Container (
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300], // Background color
+                    borderRadius: BorderRadius.circular(32), // Rounded corners
+                  ),
+                  child: ListTile(
+                  title: Text(item.name,
+                    style: TextStyle(
+                      color: Colors.black54, // Text color
+                      fontWeight: FontWeight.bold,
+                    ),
+
+                  ),
+                  subtitle: Text(item.category.target?.name ?? 'No Category',
+                    style: TextStyle(color: Colors.black54),),
                   onTap: () {
                     // Open the ItemScreen when tapped
                     _viewItem(item);
                   },
+                ),
                 );
               },
             ),
@@ -268,7 +287,7 @@ class _ItemScreenState extends State<ItemScreen> {
           children: [
             Text('Conditions:'),
             for (final condition in conditions)
-              Text('- $condition'),
+              Text('$condition'),
           ],
         );
 

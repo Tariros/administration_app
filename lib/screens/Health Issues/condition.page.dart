@@ -28,10 +28,8 @@ class _ConditionsPageState extends State<ConditionsPage> {
 
 
   }
-
-
   final TextEditingController _searchController = TextEditingController();
-  int _visibleConditions = 20; // Default number of participants to display
+ int _visibleConditions = 20; // Default number of participants to display
 
   @override
   Widget build(BuildContext context) {
@@ -52,20 +50,20 @@ class _ConditionsPageState extends State<ConditionsPage> {
               },
             ),
           ),
-          DropdownButton<int>(
+         DropdownButton<int>(
             value: _visibleConditions,
             items: [20, 30, 50, 100].map((int value) {
               return DropdownMenuItem<int>(
-                value: value,
-                child: Text('$value Conditions'),
+               value: value,
+               child: Text('$value Conditions'),
               );
             }).toList(),
             onChanged: (int? newValue) {
-              setState(() {
+             setState(() {
                 _visibleConditions = newValue!;
               });
             },
-          ),
+         ),
           Expanded(
             child: ListView.builder(
               itemCount: _visibleConditions,
@@ -104,8 +102,8 @@ class _ConditionsPageState extends State<ConditionsPage> {
                           icon: Icon(Icons.visibility),
                           onPressed: () {
                             // Implement view functionality
-                           Navigator.push(context,
-                               MaterialPageRoute(builder: (context) => ViewConditionPage(condition: condition, )));
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => ViewConditionPage(condition: condition, )));
 
                           },
                         ),

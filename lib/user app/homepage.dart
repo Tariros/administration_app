@@ -1,9 +1,10 @@
 import 'package:administration_application/screens/Remedies/item.page.dart';
 import 'package:flutter/material.dart';
-import 'package:administration_application/homescreen.dart';
-import 'package:administration_application/user app/homepage.dart';
+import 'package:administration_application/user app/item list.dart';
+import 'package:administration_application/user app/condition list.dart';
+import 'package:administration_application/user app/plan prompt.dart';
 
-class HomePage extends StatelessWidget {
+class UserHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,11 +21,11 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HomeScreen(),
+                    builder: (context) => ConditionList(),
                   ),
                 );
               },
-              child: Text('Admin'),
+              child: Text('Conditions'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -33,11 +34,24 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => UserHomePage(),
+                    builder: (context) => ItemList(),
                   ),
                 );
               },
-              child: Text('User'),
+              child: Text('Items'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the user screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlanPrompt(),
+                  ),
+                );
+              },
+              child: Text('Prompt'),
             ),
           ],
         ),
